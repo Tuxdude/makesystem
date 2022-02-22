@@ -1,8 +1,8 @@
-ifndef UTILS_MK
-UTILS_MK := 1
+ifndef COMMON_UTILS_MK
+COMMON_UTILS_MK := 1
 
-include $(MAKESYSTEM_BASE_DIR)/colors.mk
-include $(MAKESYSTEM_BASE_DIR)/silent.mk
+include $(MAKESYSTEM_BASE_DIR)/common/colors.mk
+include $(MAKESYSTEM_BASE_DIR)/common/silent.mk
 
 # Common utilities.
 ECHO                              := echo -e

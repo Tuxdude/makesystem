@@ -1,5 +1,5 @@
-ifndef SILENT_MK
-SILENT_MK := 1
+ifndef COMMON_SILENT_MK
+COMMON_SILENT_MK := 1
 
 # Enable a verbose output from the makesystem.
 VERBOSE ?= no

@@ -1,5 +1,5 @@
-ifndef COLORS_MK
-COLORS_MK := 1
+ifndef COMMON_COLORS_MK
+COMMON_COLORS_MK := 1
 
 # Disable the colorized output from make if either
 # explicitly overridden or if no tty is attached.

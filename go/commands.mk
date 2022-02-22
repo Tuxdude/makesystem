@@ -1,8 +1,8 @@
 ifndef GO_COMMANDS_MK
 GO_COMMANDS_MK := 1
 
-include $(MAKESYSTEM_BASE_DIR)/go_toolchain.mk
-include $(MAKESYSTEM_BASE_DIR)/go_gen_files.mk
+include $(MAKESYSTEM_BASE_DIR)/go/toolchain.mk
+include $(MAKESYSTEM_BASE_DIR)/go/gen_files.mk
 
 # Commands invoked from rules.
 GOBUILD                           := $(GO_CMD) build
