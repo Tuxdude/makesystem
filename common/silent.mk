@@ -2,11 +2,11 @@ ifndef COMMON_SILENT_MK
 COMMON_SILENT_MK := 1
 
 # Enable a verbose output from the makesystem.
-VERBOSE ?= no
+VERBOSE ?= n
 
 # Silence echoing the commands being invoked unless
 # overridden to be verbose.
-ifneq ($(VERBOSE),yes)
+ifneq ($(VERBOSE),y)
     silent := @
 else
     silent :=
