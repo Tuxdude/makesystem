@@ -5,6 +5,7 @@ include $(MAKESYSTEM_BASE_DIR)/common/shell.mk
 include $(MAKESYSTEM_BASE_DIR)/common/utils.mk
 include $(MAKESYSTEM_BASE_DIR)/go/commands.mk
 include $(MAKESYSTEM_BASE_DIR)/go/packages.mk
+include $(MAKESYSTEM_BASE_DIR)/go/github_workflow_configs.mk
 
 all: fix_imports generate fmt lint vet build test
 .PHONY: all
@@ -58,6 +59,22 @@ fmt:
 generate:
 	$(call ExecWithMsg,Generating,$(GOCLEAN) ./...)
 .PHONY: generate
+
+github_dump_build_os_matrix:
+	@$(DUMP_GITHUB_BUILD_OS_MATRIX)
+.PHONY: github_dump_build_os_matrix
+
+github_dump_codeql_os_matrix:
+	@$(DUMP_GITHUB_CODEQL_OS_MATRIX)
+.PHONY: github_dump_codeql_os_matrix
+
+github_dump_lint_os_matrix:
+	@$(DUMP_GITHUB_LINT_OS_MATRIX)
+.PHONY: github_dump_lint_os_matrix
+
+github_dump_tests_os_matrix:
+	@$(DUMP_GITHUB_TESTS_OS_MATRIX)
+.PHONY: github_dump_tests_os_matrix
 
 goreleaser_check_config:
 	$(call ExecWithMsg,GoReleaser Checking config,$(GORELEASERCHECK))
