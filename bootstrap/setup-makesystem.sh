@@ -33,8 +33,5 @@ rm -rf ${makesystem_dir:?}/.git
 
 ${makesystem_dir:?}/scripts/post-install.sh
 
-if [[ "${upgrade:?}" == "1" ]]; then
-    echo "${ver:?}" > .bootstrap/VERSION
-fi
-
+echo "${ver:?}" > .bootstrap/VERSION
 exit 0
