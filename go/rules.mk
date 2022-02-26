@@ -3,6 +3,7 @@ GO_RULES_MK := 1
 
 include $(MAKESYSTEM_BASE_DIR)/common/shell.mk
 include $(MAKESYSTEM_BASE_DIR)/common/utils.mk
+include $(MAKESYSTEM_BASE_DIR)/common/upgrade.mk
 include $(MAKESYSTEM_BASE_DIR)/go/commands.mk
 include $(MAKESYSTEM_BASE_DIR)/go/packages.mk
 include $(MAKESYSTEM_BASE_DIR)/go/github_workflow_configs.mk
