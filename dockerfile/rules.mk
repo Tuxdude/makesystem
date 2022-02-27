@@ -4,6 +4,7 @@ DOCKERFILE_RULES_MK := 1
 include $(MAKESYSTEM_BASE_DIR)/common/shell.mk
 include $(MAKESYSTEM_BASE_DIR)/common/utils.mk
 include $(MAKESYSTEM_BASE_DIR)/common/upgrade.mk
+include $(MAKESYSTEM_BASE_DIR)/common/version.mk
 include $(MAKESYSTEM_BASE_DIR)/dockerfile/image.mk
 include $(MAKESYSTEM_BASE_DIR)/dockerfile/commands.mk
 
