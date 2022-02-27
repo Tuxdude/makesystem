@@ -72,6 +72,7 @@ jobs:
         with:
           context: .
           load: true
+          push: false
           tags: ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_TEST_TAG }}
           build-args: ${{ steps.docker_build_args.outputs.build_args }}
 
