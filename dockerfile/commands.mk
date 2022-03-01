@@ -9,6 +9,10 @@ ifeq ($(DOCKER_BUILD_PROGRESS_PLAIN),y)
     BUILD_OPTIONS += --progress=plain
 endif
 
+ifeq ($(DOCKER_BUILD_ALLOW_INSECURE),y)
+    BUILD_OPTIONS += --allow security.insecure
+endif
+
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./scripts/build-args.sh
 UPDATE_PACKAGES_INSTALL := ./scripts/update-packages-install.sh
