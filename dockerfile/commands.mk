@@ -17,10 +17,16 @@ endif
 
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./scripts/build-args.sh
-DUMP_ENTITLEMENTS       := echo -e "::set-output name=entitlements::$(ENTITLEMENTS)"
 UPDATE_PACKAGES_INSTALL := ./scripts/update-packages-install.sh
 DOCKERBUILD             := $(DOCKER_CMD) buildx build $(BUILD_OPTIONS) $(shell $(DUMP_BUILD_ARGS) docker-flags)
 DOCKERTEST              := IMAGE=$(FULL_IMAGE_NAME) ./scripts/test.sh
 DOCKERLINT              := $(DOCKER_CMD) run --rm -i hadolint/hadolint:v2.8.0 hadolint - <
+
+DUMP_ENTITLEMENTS       := echo -e "::set-output name=entitlements::$(ENTITLEMENTS)"
+ifneq ($(ENTITLEMENTS),)
+    DUMP_BUILDKITD_FLAGS    := echo -e "::set-output name=buildkitd_flags::$(addprefix --allow-insecure-entitlement=,$(ENTITLEMENTS))"
+else
+    DUMP_BUILDKITD_FLAGS    := echo -e "::set-output name=buildkitd_flags::"
+endif
 
 endif

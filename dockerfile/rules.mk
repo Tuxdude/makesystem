@@ -31,6 +31,10 @@ github_dump_docker_entitlements:
 	@$(DUMP_ENTITLEMENTS)
 .PHONY: github_dump_docker_entitlements
 
+github_dump_docker_buildkitd_flags:
+	@$(DUMP_BUILDKITD_FLAGS)
+.PHONY: github_dump_docker_buildkitd_flags
+
 lint:
 	$(call ExecWithMsg,Linting,$(DOCKERLINT) Dockerfile)
 .PHONY: lint

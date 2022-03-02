@@ -51,8 +51,31 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
+      - name: Disable Experimental Docker Daemon
+        run: |
+          sudo jq '.experimental = false' < /etc/docker/daemon.json > /tmp/docker.json
+          sudo mv /tmp/docker.json /etc/docker/daemon.json
+          sudo cat /etc/docker/daemon.json
+          sudo service docker restart
+          docker version
+          docker info
+
+      - name: Set Up Docker Build Kit Daemon Flags
+        id: docker_buildkitd_flags
+        run: make github_dump_docker_buildkitd_flags
+
+      - name: Set Up Docker Entitlements
+        id: docker_entitlements
+        run: make github_dump_docker_entitlements
+
+      - name: Set Up Docker Build Args
+        id: docker_build_args
+        run: make github_dump_docker_build_args
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+        with:
+          buildkitd-flags: ${{steps.docker_buildkitd_flags.outputs.buildkitd_flags}}
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -63,10 +86,6 @@ jobs:
       - name: Set Workflow Env vars
         run: make github_env_vars >> $GITHUB_ENV
 
-      - name: Set Up Docker Build Args
-        id: docker_build_args
-        run: make github_dump_docker_build_args
-
       - name: Build amd64 Docker image locally
         uses: docker/build-push-action@v2
         with:
@@ -75,6 +94,7 @@ jobs:
           push: false
           tags: ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_TEST_TAG }}
           build-args: ${{ steps.docker_build_args.outputs.build_args }}
+          allow: ${{ steps.docker_entitlements.outputs.entitlements }}
 
       - name: Test the local amd64 Docker image
         run: |
@@ -95,6 +115,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_PUBLISH_TAG }}
           build-args: ${{ steps.docker_build_args.outputs.build_args }}
+          allow: ${{ steps.docker_entitlements.outputs.entitlements }}
 
       - name: Build docker images for all platforms
         uses: docker/build-push-action@v2
@@ -111,3 +132,4 @@ jobs:
           push: false
           tags: ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_TEST_TAG }}
           build-args: ${{ steps.docker_build_args.outputs.build_args }}
+          allow: ${{ steps.docker_entitlements.outputs.entitlements }}
