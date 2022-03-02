@@ -27,6 +27,10 @@ github_dump_docker_build_args:
 	@$(DUMP_BUILD_ARGS)
 .PHONY: github_dump_docker_build_args
 
+github_dump_docker_entitlements:
+	@$(DUMP_ENTITLEMENTS)
+.PHONY: github_dump_docker_entitlements
+
 lint:
 	$(call ExecWithMsg,Linting,$(DOCKERLINT) Dockerfile)
 .PHONY: lint

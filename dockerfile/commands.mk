@@ -4,6 +4,7 @@ DOCKERFILE_COMMANDS_MK := 1
 include $(MAKESYSTEM_BASE_DIR)/dockerfile/toolchain.mk
 
 BUILD_OPTIONS :=
+ENTITLEMENTS :=
 
 ifeq ($(DOCKER_BUILD_PROGRESS_PLAIN),y)
     BUILD_OPTIONS += --progress=plain
@@ -11,10 +12,12 @@ endif
 
 ifeq ($(DOCKER_BUILD_ALLOW_INSECURE),y)
     BUILD_OPTIONS += --allow security.insecure
+    ENTITLEMENTS += security.insecure
 endif
 
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./scripts/build-args.sh
+DUMP_ENTITLEMENTS       := echo -e "::set-output name=entitlements::$(ENTITLEMENTS)"
 UPDATE_PACKAGES_INSTALL := ./scripts/update-packages-install.sh
 DOCKERBUILD             := $(DOCKER_CMD) buildx build $(BUILD_OPTIONS) $(shell $(DUMP_BUILD_ARGS) docker-flags)
 DOCKERTEST              := IMAGE=$(FULL_IMAGE_NAME) ./scripts/test.sh
