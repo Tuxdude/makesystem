@@ -15,6 +15,10 @@ ifeq ($(DOCKER_BUILD_ALLOW_INSECURE),y)
     ENTITLEMENTS += security.insecure
 endif
 
+ifneq ($(DOCKER_BUILD_PLATFORM),)
+    BUILD_OPTIONS += --platform=$(DOCKER_BUILD_PLATFORM)
+endif
+
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./scripts/build-args.sh
 UPDATE_PACKAGES_INSTALL := ./scripts/update-packages-install.sh
