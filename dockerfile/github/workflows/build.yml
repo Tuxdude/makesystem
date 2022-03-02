@@ -48,9 +48,6 @@ jobs:
       - name: Set up makesystem
         run: make makesystem_install
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-
       - name: Disable Experimental Docker Daemon
         run: |
           sudo jq '.experimental = false' < /etc/docker/daemon.json > /tmp/docker.json
@@ -72,6 +69,12 @@ jobs:
         id: docker_build_args
         run: make github_dump_docker_build_args
 
+      - name: Set Workflow Env vars
+        run: make github_env_vars >> $GITHUB_ENV
+
+      - name: Set up QEMU for Docker
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
         with:
@@ -82,9 +85,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Set Workflow Env vars
-        run: make github_env_vars >> $GITHUB_ENV
 
       - name: Build amd64 Docker image locally
         uses: docker/build-push-action@v2
