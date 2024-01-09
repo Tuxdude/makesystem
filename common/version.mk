@@ -8,7 +8,7 @@ makesystem_version:
 .PHONY: makesystem_version
 
 github_dump_makesystem_version:
-	@echo "::set-output name=version::$$($(CURRENT_VERSION_CMD))"
+	$(call GithubSetOutputParam,version,$$($(CURRENT_VERSION_CMD)))
 .PHONY: github_dump_makesystem_version
 
 endif

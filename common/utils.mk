@@ -16,4 +16,11 @@ define ExecWithMsg
     $(silent)$(2)
 endef
 
+# GithubSetOutputParam
+# $(1) - Parameter Name
+# $(2) - Parameter Value
+define GithubSetOutputParam
+if [ -n "$$GITHUB_OUTPUT" ]; then echo "$(1)=$(2)" >> $$GITHUB_OUTPUT; else echo "::set-output name=$(1)::$(2)"; fi
+endef
+
 endif

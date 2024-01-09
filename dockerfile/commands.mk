@@ -26,11 +26,11 @@ DOCKERBUILD             := $(DOCKER_CMD) buildx build $(BUILD_OPTIONS) $(shell $
 DOCKERTEST              := IMAGE=$(FULL_IMAGE_NAME) ./scripts/test.sh
 DOCKERLINT              := $(DOCKER_CMD) run --rm -i hadolint/hadolint:v2.8.0 hadolint - <
 
-DUMP_ENTITLEMENTS       := echo -e "::set-output name=entitlements::$(ENTITLEMENTS)"
+DUMP_ENTITLEMENTS       := $(call GithubSetOutputParam,entitlements,$(ENTITLEMENTS))
 ifneq ($(ENTITLEMENTS),)
-    DUMP_BUILDKITD_FLAGS    := echo -e "::set-output name=buildkitd_flags::$(addprefix --allow-insecure-entitlement=,$(ENTITLEMENTS))"
+    DUMP_BUILDKITD_FLAGS    := $(call GithubSetOutputParam,buildkitd_flags,$(addprefix --allow-insecure-entitlement=,$(ENTITLEMENTS)))
 else
-    DUMP_BUILDKITD_FLAGS    := echo -e "::set-output name=buildkitd_flags::"
+    DUMP_BUILDKITD_FLAGS    := $(call GithubSetOutputParam,buildkitd_flags,)
 endif
 
 endif

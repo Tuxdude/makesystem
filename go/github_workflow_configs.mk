@@ -7,7 +7,7 @@ $(subst \" \",\"$(comma) \",$(addsuffix \",$(addprefix \",$(1))))
 endef
 
 define DumpGithubStrListOutput
-echo "::set-output name=$(1)::[$(call DumpGithubJsonStrList,$(2))]"
+$(call GithubSetOutputParam,$(1),[$(call DumpGithubJsonStrList,$(2))])
 endef
 
 GITHUB_OS_LIST ?= ubuntu-latest macos-latest windows-latest
