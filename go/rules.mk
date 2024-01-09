@@ -83,7 +83,7 @@ goreleaser_check_config:
 .PHONY: goreleaser_check_config
 
 goreleaser_local_release:
-	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --rm-dist)
+	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --clean)
 .PHONY: goreleaser_local_release
 
 goreleaser_verify_install_prereqs:
