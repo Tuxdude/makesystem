@@ -6,8 +6,9 @@ ifeq ($(IMAGE_NAME),)
 endif
 
 # Build image information.
-USER_NAME         ?= tuxdude
-IMAGE_TAG         ?= local-latest
-FULL_IMAGE_NAME   := $(USER_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
+IMAGE_TAG           ?= local-latest
+DOCKERHUB_USER_NAME ?= tuxdude
+GHCR_USER_NAME      ?= tuxdudehomelab
+FULL_IMAGE_NAME     := $(DOCKERHUB_USER_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 endif

@@ -20,7 +20,8 @@ build:
 .PHONY: build
 
 github_env_vars:
-	@echo "DOCKERHUB_REPO_NAME=$(USER_NAME)/$(IMAGE_NAME)"
+	@echo "DOCKERHUB_REPO_NAME=$(DOCKERHUB_USER_NAME)/$(IMAGE_NAME)"
+	@echo "GHCR_REPO_NAME=ghcr.io/$(GHCR_USER_NAME)/$(IMAGE_NAME)"
 .PHONY: github_env_vars
 
 github_dump_docker_build_args:
