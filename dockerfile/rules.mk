@@ -48,4 +48,12 @@ update_packages:
 	$(call ExecWithMsg,Updating Packages to Install List,$(UPDATE_PACKAGES_INSTALL))
 .PHONY: update_packages
 
+update_latest_upstream:
+	$(call ExecWithMsg,Updating Latest Upstream Version,$(UPDATE_LATEST_UPSTREAM))
+.PHONY: update_latest_upstream
+
+prepare_release:
+	$(call ExecWithMsg,Preparing Release,$(PREPARE_RELEASE))
+.PHONY: prepare_release
+
 endif
