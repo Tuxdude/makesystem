@@ -18,30 +18,32 @@ args_file_as_build_args_for_dockerflags() {
     done < ${ARGS_FILE:?}
 }
 
-packages_to_install() {
+packages_from_file_with_version() {
+    local packages_file="${1:?}"
     while IFS="=" read -r key value; do
         echo -n "$key=$value "
-    done < "${PACKAGES_INSTALL_FILE:?}"
+    done < "${packages_file:?}"
 }
 
-packages_to_remove() {
-    while IFS="=" read -r key; do
+packages_from_file() {
+    local packages_file="${1:?}"
+    while IFS="=" read -r key value; do
         echo -n "$key "
-    done < "${PACKAGES_REMOVE_FILE:?}"
+    done < "${packages_file:?}"
 }
 
 github_env_dump() {
     args_file_as_build_args_for_github
     if [ -f "${PACKAGES_INSTALL_FILE:?}" ]; then
-        echo "PACKAGES_TO_INSTALL=$(packages_to_install)"
+        echo "PACKAGES_TO_INSTALL=$(packages_from_file_with_version "${PACKAGES_INSTALL_FILE:?}")"
     fi
     if [ -f "${PACKAGES_REMOVE_FILE:?}" ]; then
-        echo "PACKAGES_TO_REMOVE=$(packages_to_remove)"
+        echo "PACKAGES_TO_REMOVE=$(packages_from_file "${PACKAGES_REMOVE_FILE:?}")"
     fi
 }
 
 github_output_build_args() {
-    output=$(github_env_dump)
+    local output=$(github_env_dump)
     if [ -n "${GITHUB_OUTPUT}" ]; then
         echo "build_args<<EOF" >> ${GITHUB_OUTPUT:?}
         echo "${output:?}" >> ${GITHUB_OUTPUT:?}
@@ -60,9 +62,44 @@ dockerflags_output_build_args() {
     # --build-arg format used with the docker build command.
     args_file_as_build_args_for_dockerflags
     if [ -f "${PACKAGES_INSTALL_FILE:?}" ]; then
-        echo -n "--build-arg PACKAGES_TO_INSTALL=\"$(packages_to_install)\" "
+        echo -n "--build-arg PACKAGES_TO_INSTALL=\"$(packages_from_file_with_version "${PACKAGES_INSTALL_FILE:?}")\" "
     fi
     if [ -f "${PACKAGES_REMOVE_FILE:?}" ]; then
-        echo -n "--build-arg PACKAGES_TO_REMOVE=\"$(packages_to_remove)\""
+        echo -n "--build-arg PACKAGES_TO_REMOVE=\"$(packages_from_file "${PACKAGES_REMOVE_FILE:?}")\""
+    fi
+}
+
+get_config_arg() {
+    local key="${1:?}"
+    sed -n -E "s/^${key:?}=(.*)\$/\\1/p" ${ARGS_FILE:?}
+}
+
+set_config_arg() {
+    local key="${1:?}"
+    local val="${2:?}"
+    sed -i -E "s/^${key:?}=(.*)\$/${key:?}=${val:?}/" ${ARGS_FILE:?}
+}
+
+image_name_from_config_key_prefix() {
+    local prefix="${1:?}"
+    local img_name="$(get_config_arg "${prefix:?}_NAME")"
+    local img_tag="$(get_config_arg "${prefix:?}_TAG")"
+    echo -n "${img_name:?}:${img_tag:?}"
+}
+
+upstream_image_name() {
+    image_name_from_config_key_prefix "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
+}
+
+package_versions_for_packages_in_packages_install_cmd() {
+    echo -n "apt-get -qq update && apt list 2>/dev/null $(packages_from_file "${PACKAGES_INSTALL_FILE:?}") | sed -E 's@([^ ]+)/[^ ]+ ([^ ]+) .+@\1=\2@g'"
+}
+
+update_packages_install() {
+    if [ -f "${PACKAGES_INSTALL_FILE:?}" ]; then
+        updated_list=$(docker run --rm "$(upstream_image_name)" sh -c "$(package_versions_for_packages_in_packages_install_cmd)" | grep -v 'Listing...')
+        echo "${updated_list:?}" > "${PACKAGES_INSTALL_FILE:?}"
+    else
+        echo "No ${PACKAGES_INSTALL_FILE:?} found, so skipping ..."
     fi
 }
