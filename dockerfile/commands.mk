@@ -20,7 +20,7 @@ ifneq ($(DOCKER_BUILD_PLATFORM),)
 endif
 
 # Commands invoked from rules.
-DUMP_BUILD_ARGS         := ./scripts/build-args.sh
+DUMP_BUILD_ARGS         := ./.makesystem/dockerfile/scripts/build-args.sh
 UPDATE_PACKAGES_INSTALL := ./scripts/update-packages-install.sh
 UPDATE_LATEST_UPSTREAM  := ./scripts/update-latest-upstream.sh
 PREPARE_RELEASE         := ./scripts/prepare-release.sh
