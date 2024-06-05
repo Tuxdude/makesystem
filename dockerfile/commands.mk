@@ -22,7 +22,7 @@ endif
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./.makesystem/dockerfile/scripts/build-args.sh
 UPDATE_PACKAGES_INSTALL := ./.makesystem/dockerfile/scripts/update-packages-install.sh
-UPDATE_LATEST_UPSTREAM  := ./scripts/update-latest-upstream.sh
+UPDATE_LATEST_UPSTREAM  := ./.makesystem/dockerfile/scripts/update-latest-upstream.sh
 PREPARE_RELEASE         := ./scripts/prepare-release.sh
 DOCKERBUILD             := $(DOCKER_CMD) buildx build $(BUILD_OPTIONS) $(shell $(DUMP_BUILD_ARGS) docker-flags)
 DOCKERTEST              := IMAGE=$(FULL_IMAGE_NAME) ./.makesystem/dockerfile/scripts/test.sh

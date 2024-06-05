@@ -69,15 +69,33 @@ dockerflags_output_build_args() {
     fi
 }
 
+get_config_value_from_file() {
+    local config_file="${1:?}"
+    local key="${2:?}"
+    sed -n -E "s/^${key:?}=(.*)\$/\\1/p" ${config_file:?}
+}
+
+set_config_value_in_file() {
+    local config_file="${1:?}"
+    local key="${2:?}"
+    local val="${3:?}"
+    sed -i -E "s/^${key:?}=(.*)\$/${key:?}=${val:?}/" ${config_file:?}
+}
+
 get_config_arg() {
     local key="${1:?}"
-    sed -n -E "s/^${key:?}=(.*)\$/\\1/p" ${ARGS_FILE:?}
+    get_config_value_from_file "${ARGS_FILE:?}" "${key:?}"
 }
 
 set_config_arg() {
     local key="${1:?}"
     local val="${2:?}"
-    sed -i -E "s/^${key:?}=(.*)\$/${key:?}=${val:?}/" ${ARGS_FILE:?}
+    set_config_value_in_file "${ARGS_FILE:?}" "${key:?}" "${val:?}"
+}
+
+get_packages_install_package_version() {
+    local pkg="${1:?}"
+    get_config_value_from_file "${PACKAGES_INSTALL_FILE:?}" "${pkg:?}"
 }
 
 image_name_from_config_key_prefix() {
@@ -89,6 +107,11 @@ image_name_from_config_key_prefix() {
 
 upstream_image_name() {
     image_name_from_config_key_prefix "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
+}
+
+package_version_cmd() {
+    local pkg="${1:?}"
+    echo -n "apt-get -qq update && apt list 2>/dev/null ${pkg:?} | grep '${pkg:?}' | sed -E 's@([^ ]+)/[^ ]+ ([^ ]+) .+@\2@g'"
 }
 
 package_versions_for_packages_in_packages_install_cmd() {
@@ -138,5 +161,76 @@ run_test() {
     else
         echo "Invalid value for TEST_TYPE=${TEST_TYPE:?}"
         exit 1
+    fi
+}
+
+git_repo_get_all_tags() {
+    local git_repo="${1:?}"
+
+    if [ -z "$GIT_REPO_TAGS_CUSTOM_FILTERING_REGEX" ]; then
+        git -c 'versionsort.suffix=-' ls-remote \
+            --exit-code \
+            --refs \
+            --sort='version:refname' \
+            --tags \
+            ${git_repo:?} '*.*.*' | \
+            cut --delimiter='/' --fields=3
+    else
+        git -c 'versionsort.suffix=-' ls-remote \
+            --exit-code \
+            --refs \
+            --sort='version:refname' \
+            --tags \
+            ${git_repo:?} '*.*.*' | \
+            cut --delimiter='/' --fields=3 | \
+            grep -P -v "${GIT_REPO_TAGS_CUSTOM_FILTERING_REGEX:?}"
+    fi
+}
+
+git_repo_latest_tag() {
+    git_repo="${1:?}"
+    # Strip out any strings that begin with 'v' before identifying the highest semantic version.
+    highest_sem_ver_tag=$(git_repo_get_all_tags ${git_repo:?} | sed -E s'#^v(.*)$#\1#g' | sed '/-/!{s/$/_/}' | sort --version-sort | sed 's/_$//'| tail -1)
+    # Identify the correct tag for the semantic version of interest.
+    git_repo_get_all_tags ${git_repo:?} | grep -E "${highest_sem_ver_tag//./\\.}$" | cut --delimiter='/' --fields=3
+}
+
+dockerhub_tags() {
+    local dockerhub_repo="${1:?}"
+    case "${dockerhub_repo:?}" in
+        */*) :;; # namespace/repository syntax, leave as is
+        *) dockerhub_repo="library/${dockerhub_repo:?}";; # bare repository name (docker official image); must convert to namespace/repository syntax
+    esac
+    auth_url="https://auth.docker.io/token?service=registry.docker.io&scope=repository:${dockerhub_repo:?}:pull"
+    token="$(curl -fsSL "${auth_url:?}" | jq --raw-output '.token')"
+    tags_url="https://registry-1.docker.io/v2/${dockerhub_repo:?}/tags/list"
+    curl -fsSL -H "Accept: application/json" -H "Authorization: Bearer ${token:?}" "${tags_url:?}" | jq --raw-output '.tags[]'
+}
+
+dockerhub_latest_tag() {
+    local repo="${1:?}"
+    local img_pattern="${2:?}"
+    dockerhub_tags "${repo:?}" | grep -E "${img_pattern:?}" | sort --version-sort --reverse | head -1
+}
+
+url_sha256_checksum() {
+    local url="${1:?}"
+    curl --silent --location ${url:?} | sha256sum | cut --delimiter=' ' --fields=1
+}
+
+upstream_git_repo_archive_sha256_checksum() {
+    local ver="${1:?}"
+    url_sha256_checksum "${UPSTREAM_GIT_REPO:?}/archive/refs/tags/${ver:?}.tar.gz"
+}
+
+update_latest_upstream() {
+    local cur_ver="$(current_upstream_version)"
+    local latest_ver="$(latest_upstream_version)"
+
+    if [[ "${cur_ver:?}" == "${latest_ver:?}" ]]; then
+        echo "Existing config is already up to date and pointing to the latest upstream ${PACKAGE_NAME:?} version '${latest_ver:?}'"
+    else
+        update_latest_upstream_version "${cur_ver:?}" "${latest_ver:?}"
+        git commit -m "feat: Bump upstream ${PACKAGE_NAME:?} version to ${latest_ver:?}."
     fi
 }
