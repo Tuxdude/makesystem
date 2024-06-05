@@ -103,3 +103,40 @@ update_packages_install() {
         echo "No ${PACKAGES_INSTALL_FILE:?} found, so skipping ..."
     fi
 }
+
+test_random_container_name() {
+    shuf -zer -n16  _ {A..Z} {a..z} {0..9} | tr -d '\0'
+}
+
+test_cleanup_container() {
+    local container_name="${1:?}"
+
+    echo "Stopping the ${TEST_CONTAINER_TYPE:?} container ${container_name:?} ..."
+    docker stop ${container_name:?} --time 5 2>/dev/null 1>&2 || /bin/true
+    docker kill ${container_name:?} 2>/dev/null 1>&2 || /bin/true
+}
+
+run_test() {
+    local container_name=$(test_random_container_name)
+
+    if [[ "${TEST_TYPE}" == "background" ]]; then
+        echo "Starting ${TEST_CONTAINER_TYPE:?} container ${container_name:?} to run tests in the background ..."
+        test_start_container ${container_name:?}
+
+        echo "Waiting for the ${TEST_CONTAINER_TYPE:?} container ${container_name:?} to finish starting up ..."
+        sleep ${TEST_CONTAINER_START_WAIT_SECONDS}
+
+        echo "Running tests against the ${TEST_CONTAINER_TYPE:?} container ${container_name:?} ..."
+        test_image_after_container_startup ${container_name:?}
+
+        echo "All tests passed against the ${TEST_CONTAINER_TYPE:?} container ${container_name:?} ..."
+        test_cleanup_container ${container_name:?}
+    elif [[ "${TEST_TYPE}" == "foreground" ]]; then
+        echo "Starting ${TEST_CONTAINER_TYPE:?} container ${container_name:?} to run tests in the foreground ..."
+        test_start_container ${container_name:?}
+        echo "All tests passed against the ${TEST_CONTAINER_TYPE:?} container ${container_name:?} ..."
+    else
+        echo "Invalid value for TEST_TYPE=${TEST_TYPE:?}"
+        exit 1
+    fi
+}
