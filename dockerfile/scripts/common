@@ -109,6 +109,19 @@ upstream_image_name() {
     image_name_from_config_key_prefix "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
 }
 
+latest_base_image_tag() {
+    local repo="$(get_config_arg "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX}_NAME")"
+    local pattern="${UPSTREAM_IMAGE_PATTERN:-*}"
+    dockerhub_latest_tag "${repo:?}" "${pattern:?}"
+}
+
+update_latest_base_image() {
+    local image_arg_prefix="${1:?}"
+    local ver="$(latest_base_image_tag)"
+    echo "Updating ${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?} -> ${ver:?}"
+    set_config_arg "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}_TAG" "${ver:?}"
+}
+
 package_version_cmd() {
     local pkg="${1:?}"
     echo -n "apt-get -qq update && apt list 2>/dev/null ${pkg:?} | grep '${pkg:?}' | sed -E 's@([^ ]+)/[^ ]+ ([^ ]+) .+@\2@g'"
@@ -195,6 +208,10 @@ git_repo_latest_tag() {
     git_repo_get_all_tags ${git_repo:?} | grep -E "${highest_sem_ver_tag//./\\.}$" | cut --delimiter='/' --fields=3
 }
 
+git_local_repo_latest_tag() {
+    git tag --list | sort --version-sort --reverse | head -1
+}
+
 dockerhub_tags() {
     local dockerhub_repo="${1:?}"
     case "${dockerhub_repo:?}" in
@@ -210,7 +227,7 @@ dockerhub_tags() {
 dockerhub_latest_tag() {
     local repo="${1:?}"
     local img_pattern="${2:?}"
-    dockerhub_tags "${repo:?}" | grep -E "${img_pattern:?}" | sort --version-sort --reverse | head -1
+    dockerhub_tags "${repo:?}" | grep -E "${img_pattern:?}" | grep -v '^master$' | sort --version-sort --reverse | head -1
 }
 
 url_sha256_checksum() {
@@ -232,5 +249,54 @@ update_latest_upstream() {
     else
         update_latest_upstream_version "${cur_ver:?}" "${latest_ver:?}"
         git commit -m "feat: Bump upstream ${PACKAGE_NAME:?} version to ${latest_ver:?}."
+    fi
+}
+
+next_semantic_version() {
+    echo "${1:?}" | sed -E 's#^v([0-9]+)\.([0-9]+)\.([0-9]+)-.+$#v\1.\2.\3#g' | awk -F. -v OFS=. '{$NF += 1 ; print}'
+}
+
+package_current_release_version_for_git_tag() {
+    package_current_release_version | sed -E 's/^v(.+)$/\1/g' | sed -E 's/^(.+)(\+.+)$/\1/g'
+}
+
+prepare_release() {
+    local rel_ver=""
+    if [[ "${RELEASE_USE_CUSTOM_RELEASE_VERSION}" == "y" ]]; then
+        rel_ver=$(custom_release_version)
+    elif [ -z "$1" ]; then
+        # Generate the next semantic version number if version number is not supplied.
+        rel_ver=$(next_semantic_version $(git_local_repo_latest_tag))
+    else
+        # Use the supplied version number from the command line arg.
+        rel_ver="${1:?}"
+    fi
+    local pkg_ver=$(package_current_release_version_for_git_tag)
+
+    if [[ "${RELEASE_UPDATE_BASE_IMAGE}" != "n" ]]; then
+        # Create a separate release branch to update the base image tag.
+        git branch temp-release
+        git checkout temp-release
+
+        # Update the base image tag and commit the changes.
+        update_latest_base_image "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
+        git add ${ARGS_FILE:?}
+        git commit -m "feat: Prepare for ${rel_ver:?} release based off ${RELEASE_PACKAGE_NAME:?} ${pkg_ver:?}."
+    fi
+
+    # Create a signed annotated tag at this revision.
+    local rel_tag=""
+    if [[ "${RELEASE_TAG_SKIP_PACKAGE_NAME}" == "y" ]]; then
+        rel_tag="${rel_ver:?}-${pkg_ver:?}"
+    else
+        rel_tag="${rel_ver:?}-${RELEASE_TAG_PACKAGE_NAME:?}-${pkg_ver:?}"
+    fi
+    echo "Creating tag ${rel_tag:?}"
+    git githubtag -m "${rel_ver:?} release based off ${RELEASE_PACKAGE_NAME:?} ${pkg_ver:?}." ${rel_tag:?}
+
+    if [[ "${RELEASE_UPDATE_BASE_IMAGE}" != "n" ]]; then
+        # Switch back to the master branch and delete the temporary branch used for making the release.
+        git checkout master
+        git branch -D temp-release
     fi
 }
