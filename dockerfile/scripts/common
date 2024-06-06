@@ -133,7 +133,7 @@ package_versions_for_packages_in_packages_install_cmd() {
 
 update_packages_install() {
     if [ -f "${PACKAGES_INSTALL_FILE:?}" ]; then
-        updated_list=$(docker run --rm "$(upstream_image_name)" sh -c "$(package_versions_for_packages_in_packages_install_cmd)" | grep -v 'Listing...')
+        updated_list=$(docker run --rm "$(base_image_name)" sh -c "$(package_versions_for_packages_in_packages_install_cmd)" | grep -v 'Listing...')
         echo "${updated_list:?}" > "${PACKAGES_INSTALL_FILE:?}"
     else
         echo "No ${PACKAGES_INSTALL_FILE:?} found, so skipping ..."
