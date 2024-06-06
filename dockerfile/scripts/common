@@ -105,21 +105,21 @@ image_name_from_config_key_prefix() {
     echo -n "${img_name:?}:${img_tag:?}"
 }
 
-upstream_image_name() {
-    image_name_from_config_key_prefix "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
+base_image_name() {
+    image_name_from_config_key_prefix "${BASE_IMAGE_CONFIG_KEY_PREFIX:?}"
 }
 
 latest_base_image_tag() {
-    local repo="$(get_config_arg "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX}_NAME")"
-    local pattern="${UPSTREAM_IMAGE_PATTERN:-*}"
+    local repo="$(get_config_arg "${BASE_IMAGE_CONFIG_KEY_PREFIX}_NAME")"
+    local pattern="${BASE_IMAGE_PATTERN:-*}"
     dockerhub_latest_tag "${repo:?}" "${pattern:?}"
 }
 
 update_latest_base_image() {
     local image_arg_prefix="${1:?}"
     local ver="$(latest_base_image_tag)"
-    echo "Updating ${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?} -> ${ver:?}"
-    set_config_arg "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}_TAG" "${ver:?}"
+    echo "Updating ${BASE_IMAGE_CONFIG_KEY_PREFIX:?} -> ${ver:?}"
+    set_config_arg "${BASE_IMAGE_CONFIG_KEY_PREFIX:?}_TAG" "${ver:?}"
 }
 
 package_version_cmd() {
@@ -177,7 +177,7 @@ run_test() {
     fi
 }
 
-git_repo_get_all_tags() {
+git_remote_repo_get_all_tags() {
     local git_repo="${1:?}"
 
     if [ -z "$GIT_REPO_TAGS_CUSTOM_FILTERING_REGEX" ]; then
@@ -200,12 +200,12 @@ git_repo_get_all_tags() {
     fi
 }
 
-git_repo_latest_tag() {
+git_remote_repo_latest_tag() {
     git_repo="${1:?}"
     # Strip out any strings that begin with 'v' before identifying the highest semantic version.
-    highest_sem_ver_tag=$(git_repo_get_all_tags ${git_repo:?} | sed -E s'#^v(.*)$#\1#g' | sed '/-/!{s/$/_/}' | sort --version-sort | sed 's/_$//'| tail -1)
+    highest_sem_ver_tag=$(git_remote_repo_get_all_tags ${git_repo:?} | sed -E s'#^v(.*)$#\1#g' | sed '/-/!{s/$/_/}' | sort --version-sort | sed 's/_$//'| tail -1)
     # Identify the correct tag for the semantic version of interest.
-    git_repo_get_all_tags ${git_repo:?} | grep -E "${highest_sem_ver_tag//./\\.}$" | cut --delimiter='/' --fields=3
+    git_remote_repo_get_all_tags ${git_repo:?} | grep -E "${highest_sem_ver_tag//./\\.}$" | cut --delimiter='/' --fields=3
 }
 
 git_local_repo_latest_tag() {
@@ -235,7 +235,7 @@ url_sha256_checksum() {
     curl --silent --location ${url:?} | sha256sum | cut --delimiter=' ' --fields=1
 }
 
-upstream_git_repo_archive_sha256_checksum() {
+upstream_github_repo_archive_sha256_checksum() {
     local ver="${1:?}"
     url_sha256_checksum "${UPSTREAM_GIT_REPO:?}/archive/refs/tags/${ver:?}.tar.gz"
 }
@@ -279,7 +279,7 @@ prepare_release() {
         git checkout temp-release
 
         # Update the base image tag and commit the changes.
-        update_latest_base_image "${UPSTREAM_IMAGE_CONFIG_KEY_PREFIX:?}"
+        update_latest_base_image "${BASE_IMAGE_CONFIG_KEY_PREFIX:?}"
         git add ${ARGS_FILE:?}
         git commit -m "feat: Prepare for ${rel_ver:?} release based off ${RELEASE_PACKAGE_NAME:?} ${pkg_ver:?}."
     fi
