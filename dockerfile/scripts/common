@@ -146,7 +146,7 @@ container_ip() {
 }
 
 test_random_container_name() {
-    shuf -zer -n16  _ {A..Z} {a..z} {0..9} | tr -d '\0'
+    shuf -zer -n16  {A..Z} {a..z} {0..9} | tr -d '\0'
 }
 
 test_cleanup_container() {
