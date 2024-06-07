@@ -162,6 +162,7 @@ test_http_endpoint() {
     local protocol="${2:?}"
     local host="${3:?}"
     local port="${4:?}"
+    local expected_status_code="${5:-200}"
 
     set +e
     local http_status_code=$(\
@@ -176,8 +177,8 @@ test_http_endpoint() {
         test_cleanup_container ${container_name:?}
         exit 1
     fi
-    if [[ ${http_status_code:?} != "200" ]]; then
-        echo "Test failed: Status code is not 200"
+    if [[ ${http_status_code:?} != "${expected_status_code:?}" ]]; then
+        echo "Test failed: Status code is not ${expected_status_code:?}"
         echo "Output: ${http_status_code:?}"
         echo "Return Code: ${return_code:?}"
         test_cleanup_container ${container_name:?}
