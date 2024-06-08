@@ -302,9 +302,10 @@ url_sha256_checksum() {
     curl --silent --location ${url:?} | sha256sum | cut --delimiter=' ' --fields=1
 }
 
-upstream_github_repo_archive_sha256_checksum() {
-    local ver="${1:?}"
-    url_sha256_checksum "${UPSTREAM_GIT_REPO:?}/archive/refs/tags/${ver:?}.tar.gz"
+github_repo_archive_sha256_checksum() {
+    local repo="${1:?}"
+    local ver="${2:?}"
+    url_sha256_checksum "${repo:?}/archive/refs/tags/${ver:?}.tar.gz"
 }
 
 update_latest_upstream() {
