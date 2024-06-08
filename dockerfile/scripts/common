@@ -312,10 +312,10 @@ update_latest_upstream() {
     local latest_ver="$(latest_upstream_version)"
 
     if [[ "${cur_ver:?}" == "${latest_ver:?}" ]]; then
-        echo "Existing config is already up to date and pointing to the latest upstream ${PACKAGE_NAME:?} version '${latest_ver:?}'"
+        echo "Existing config is already up to date and pointing to the latest upstream ${UPSTREAM_PACKAGE_NAME:?} version '${latest_ver:?}'"
     else
         update_latest_upstream_version "${cur_ver:?}" "${latest_ver:?}"
-        git commit -m "feat: Bump upstream ${PACKAGE_NAME:?} version to ${latest_ver:?}."
+        git commit -m "feat: Bump upstream ${UPSTREAM_PACKAGE_NAME:?} version to ${latest_ver:?}."
     fi
 }
 
