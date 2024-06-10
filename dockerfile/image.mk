@@ -11,4 +11,7 @@ DOCKERHUB_USER_NAME ?= tuxdude
 GHCR_USER_NAME      ?= tuxdudehomelab
 FULL_IMAGE_NAME     := $(DOCKERHUB_USER_NAME)/$(IMAGE_NAME):$(IMAGE_TAG)
 
+# Supported platforms (primarily used by gituhb workflows).
+IMAGE_SUPPORTED_DOCKER_PLATFORMS ?= linux/amd64,linux/arm64/v8
+
 endif

@@ -22,6 +22,7 @@ build:
 github_env_vars:
 	@echo "DOCKERHUB_REPO_NAME=$(DOCKERHUB_USER_NAME)/$(IMAGE_NAME)"
 	@echo "GHCR_REPO_NAME=ghcr.io/$(GHCR_USER_NAME)/$(IMAGE_NAME)"
+	@echo "IMAGE_SUPPORTED_DOCKER_PLATFORMS=$(IMAGE_SUPPORTED_DOCKER_PLATFORMS)"
 .PHONY: github_env_vars
 
 github_dump_docker_build_args:
