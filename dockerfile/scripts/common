@@ -321,7 +321,12 @@ update_latest_upstream() {
 }
 
 next_semantic_version() {
-    echo "${1:?}" | sed -E 's#^v([0-9]+)\.([0-9]+)\.([0-9]+)-.+$#v\1.\2.\3#g' | awk -F. -v OFS=. '{$NF += 1 ; print}'
+    if [[ "$1" == "" ]]; then
+        # If no previous versions found, start at v0.1.0.
+        echo "v0.1.0"
+    else
+        echo "${1:?}" | sed -E 's#^v([0-9]+)\.([0-9]+)\.([0-9]+)-.+$#v\1.\2.\3#g' | awk -F. -v OFS=. '{$NF += 1 ; print}'
+    fi
 }
 
 package_current_release_version_for_git_tag() {
