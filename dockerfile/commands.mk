@@ -26,7 +26,7 @@ UPDATE_LATEST_UPSTREAM  := ./.makesystem/dockerfile/scripts/update-latest-upstre
 PREPARE_RELEASE         := ./.makesystem/dockerfile/scripts/prepare-release.sh
 DOCKERBUILD             := $(DOCKER_CMD) buildx build $(BUILD_OPTIONS) $(shell $(DUMP_BUILD_ARGS) docker-flags)
 DOCKERTEST              := IMAGE=$(FULL_IMAGE_NAME) ./.makesystem/dockerfile/scripts/test.sh
-DOCKERLINT              := $(DOCKER_CMD) run --rm -i hadolint/hadolint:v2.8.0 hadolint - <
+DOCKERLINT              := $(DOCKER_CMD) run --rm -i hadolint/hadolint:v2.12.0 hadolint - <
 
 DUMP_ENTITLEMENTS       := $(call GithubSetOutputParam,entitlements,$(ENTITLEMENTS))
 ifneq ($(ENTITLEMENTS),)
