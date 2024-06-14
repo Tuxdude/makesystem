@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -o pipefail
+set -E -e -o pipefail
 
 script_dir="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 repo_dir="$(realpath "${script_dir:?}/../../..")"
