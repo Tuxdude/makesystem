@@ -111,7 +111,7 @@ base_image_name() {
 
 latest_base_image_tag() {
     local repo="$(get_config_arg "${BASE_IMAGE_CONFIG_KEY_PREFIX}_NAME")"
-    local pattern="${BASE_IMAGE_PATTERN:-*}"
+    local pattern="${BASE_IMAGE_PATTERN:-.+}"
     dockerhub_latest_tag "${repo:?}" "${pattern:?}"
 }
 
