@@ -270,7 +270,7 @@ git_remote_repo_get_all_tags() {
 git_remote_repo_latest_tag() {
     git_repo="${1:?}"
     # Strip out any strings that begin with 'v' before identifying the highest semantic version.
-    highest_sem_ver_tag=$(git_remote_repo_get_all_tags ${git_repo:?} | sed -E s'#^v(.*)$#\1#g' | sed '/-/!{s/$/_/}' | sort --version-sort | sed 's/_$//'| tail -1)
+    highest_sem_ver_tag=$(git_remote_repo_get_all_tags ${git_repo:?} | sed -E s'#^v(.*)$#\1#g' | sed '/-/!{s/$/_/}' | sort --version-sort --reverse | sed 's/_$//'| head -1)
     # Identify the correct tag for the semantic version of interest.
     git_remote_repo_get_all_tags ${git_repo:?} | grep -E "${highest_sem_ver_tag//./\\.}$" | cut --delimiter='/' --fields=3
 }
