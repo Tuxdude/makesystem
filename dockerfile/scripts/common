@@ -163,10 +163,11 @@ test_http_endpoint() {
     local host="${3:?}"
     local port="${4:?}"
     local expected_status_code="${5:-200}"
+    local path="${6}"
 
     set +e
     local http_status_code=$(\
-        curl -w "%{http_code}" --silent --output /dev/null --location "${protocol:?}://${host:?}:${port:?}/")
+        curl -w "%{http_code}" --silent --output /dev/null --location "${protocol:?}://${host:?}:${port:?}/${path}")
     local return_code=$?
     set -e
 
