@@ -167,7 +167,7 @@ test_http_endpoint() {
 
     set +e
     local http_status_code=$(\
-        curl -w "%{http_code}" --silent --output /dev/null --location "${protocol:?}://${host:?}:${port:?}/${path}")
+        curl --silent --location --write-out "%{http_code}" --output /dev/null "${protocol:?}://${host:?}:${port:?}/${path}")
     local return_code=$?
     set -e
 
@@ -287,9 +287,9 @@ dockerhub_tags() {
         *) dockerhub_repo="library/${dockerhub_repo:?}";; # bare repository name (docker official image); must convert to namespace/repository syntax
     esac
     auth_url="https://auth.docker.io/token?service=registry.docker.io&scope=repository:${dockerhub_repo:?}:pull"
-    token="$(curl -fsSL "${auth_url:?}" | jq --raw-output '.token')"
+    token="$(curl --silent --fail --location --show-error "${auth_url:?}" | jq --raw-output '.token')"
     tags_url="https://registry-1.docker.io/v2/${dockerhub_repo:?}/tags/list"
-    curl -fsSL -H "Accept: application/json" -H "Authorization: Bearer ${token:?}" "${tags_url:?}" | jq --raw-output '.tags[]'
+    curl --silent --fail --location --show-error -H "Accept: application/json" -H "Authorization: Bearer ${token:?}" "${tags_url:?}" | jq --raw-output '.tags[]'
 }
 
 dockerhub_latest_tag() {
@@ -300,7 +300,7 @@ dockerhub_latest_tag() {
 
 url_sha256_checksum() {
     local url="${1:?}"
-    curl --silent --location ${url:?} | sha256sum | cut --delimiter=' ' --fields=1
+    curl --silent --fail --location --show-error ${url:?} | sha256sum | cut --delimiter=' ' --fields=1
 }
 
 github_repo_archive_sha256_checksum() {
