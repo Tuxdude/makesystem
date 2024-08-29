@@ -19,6 +19,10 @@ ifneq ($(DOCKER_BUILD_PLATFORM),)
     BUILD_OPTIONS += --platform=$(DOCKER_BUILD_PLATFORM)
 endif
 
+ifeq ($(DOCKER_BUILD_NO_CACHE),y)
+    BUILD_OPTIONS += --no-cache
+endif
+
 # Commands invoked from rules.
 DUMP_BUILD_ARGS         := ./.makesystem/dockerfile/scripts/build-args.sh
 UPDATE_PACKAGES_INSTALL := ./.makesystem/dockerfile/scripts/update-packages-install.sh
