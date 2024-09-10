@@ -7,7 +7,7 @@ include $(MAKESYSTEM_BASE_DIR)/go/commands.mk
 # List of packages in the current directory.
 PKGS ?= $(shell $(GOLIST) ./... | grep -v /vendor/)
 
-DEP_PKGS := $(shell $(GOLIST) -f '{{ join .Imports "\n" }}' | grep tuxdude || true)
+DEP_PKGS := $(shell $(GOLIST) -f '{{ join .Imports "\n" }}' | grep 'github.com/tuxdude' || true)
 ifeq ($(DEP_PKGS),)
     DEP_PKGS_TEXT := None
 else

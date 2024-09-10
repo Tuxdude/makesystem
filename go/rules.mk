@@ -37,7 +37,7 @@ deps_list_latest_version:
 .PHONY: deps_list_latest_version
 
 deps_update_tuxdude_latest_only:
-	$(call ExecWithMsg,Updating to the latest version of dependencies for \"$(DEP_PKGS_TEXT)\",$(GOGET) -t -u $(DEP_PKGS))
+	$(call ExecWithMsg,Updating to the latest version of dependencies for \"$(DEP_PKGS_TEXT)\",GONOPROXY=github.com/tuxdude $(GOGET) -t -u $(DEP_PKGS))
 .PHONY: deps_update_tuxdude_latest_only
 
 deps_update_tuxdude_latest: deps_update_tuxdude_latest_only tidy
