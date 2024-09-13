@@ -3,10 +3,11 @@ GO_COMMANDS_MK := 1
 
 include $(MAKESYSTEM_BASE_DIR)/go/toolchain.mk
 include $(MAKESYSTEM_BASE_DIR)/go/gen_files.mk
+include $(MAKESYSTEM_BASE_DIR)/go/version_info.mk
 
 # Commands invoked from rules.
-GOBUILD                           := $(GO_CMD) build
-GOSTRIPPEDBUILD                   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w"
+GOBUILD                           := $(GO_CMD) build $(GO_BUILD_FLAGS)
+GOSTRIPPEDBUILD                   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w" $(GO_BUILD_FLAGS)
 GOCLEAN                           := $(GO_CMD) clean
 GOGENERATE                        := $(GO_CMD) generate
 GOGET                             := $(GO_CMD) get
