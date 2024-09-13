@@ -6,7 +6,7 @@ include $(MAKESYSTEM_BASE_DIR)/go/gen_files.mk
 
 # Commands invoked from rules.
 GOBUILD                           := $(GO_CMD) build
-GOSTRIPPEDBUILD                   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w" -installsuffix cgo
+GOSTRIPPEDBUILD                   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w"
 GOCLEAN                           := $(GO_CMD) clean
 GOGENERATE                        := $(GO_CMD) generate
 GOGET                             := $(GO_CMD) get
