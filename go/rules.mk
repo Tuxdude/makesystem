@@ -24,8 +24,12 @@ clean:
 	$(call ExecWithMsg,Cleaning,$(CLEAN_ALL))
 .PHONY: clean
 
-coverage: tidy
-	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE) ./...)
+coverage_out: tidy
+	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE_OUT) ./...)
+.PHONY: coverage_out
+
+coverage: coverage_out
+	$(call ExecWithMsg,Generating Coverage HTML,$(GOCOVERAGE_HTML))
 .PHONY: coverage
 
 deps_list:
