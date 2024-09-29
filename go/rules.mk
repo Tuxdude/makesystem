@@ -28,7 +28,11 @@ coverage_out: tidy
 	$(call ExecWithMsg,Testing with Coverage generation,$(GOCOVERAGE_OUT) ./...)
 .PHONY: coverage_out
 
-coverage: coverage_out
+coverage_summary: coverage_out
+	$(call ExecWithMsg,Generating Coverage Summary,$(GOCOVERAGE_SUMMARY))
+.PHONY: coverage_summary
+
+coverage: coverage_summary
 	$(call ExecWithMsg,Generating Coverage HTML,$(GOCOVERAGE_HTML))
 .PHONY: coverage
 

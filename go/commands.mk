@@ -5,6 +5,9 @@ include $(MAKESYSTEM_BASE_DIR)/go/toolchain.mk
 include $(MAKESYSTEM_BASE_DIR)/go/gen_files.mk
 include $(MAKESYSTEM_BASE_DIR)/go/version_info.mk
 
+# Build Options
+GO_COVERAGE_PKGS ?= ./...
+
 # Commands invoked from rules.
 GOBUILD                           := $(GO_CMD) build $(GO_BUILD_FLAGS)
 GOSTRIPPEDBUILD                   := CGO_ENABLED=0 GOOS=linux $(GO_CMD) build -a -ldflags "-s -w" $(GO_BUILD_FLAGS)
@@ -14,7 +17,8 @@ GOGET                             := $(GO_CMD) get
 GOLIST                            := $(GO_CMD) list
 GOMOD                             := $(GO_CMD) mod
 GOTEST                            := $(GO_CMD) test -v
-GOCOVERAGE_OUT                    := $(GO_CMD) test -v -race -coverprofile coverage.out -covermode atomic
+GOCOVERAGE_OUT                    := $(GO_CMD) test -v -race -coverpkg "$(GO_COVERAGE_PKGS)" -coverprofile coverage.out -covermode atomic
+GOCOVERAGE_SUMMARY                := $(GO_CMD) tool cover -func=coverage.out
 GOCOVERAGE_HTML                   := $(GO_CMD) tool cover -html coverage.out -o coverage.html
 GOVET                             := $(GO_CMD) vet
 GOIMPORTS                         := $(GO_IMPORTS_CMD) -w
