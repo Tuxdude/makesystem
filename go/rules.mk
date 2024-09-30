@@ -13,11 +13,11 @@ all: fix_imports generate fmt lint vet build test
 .PHONY: all
 
 build: tidy
-	$(call ExecWithMsg,Building,$(GOBUILD) ./...)
+	$(call ExecWithMsg,Building,$(GOBUILD) .)
 .PHONY: build
 
 build_stripped: tidy
-	$(call ExecWithMsg,Building Stripped,$(GOSTRIPPEDBUILD) ./...)
+	$(call ExecWithMsg,Building Stripped,$(GOSTRIPPEDBUILD) .)
 .PHONY: build_stripped
 
 clean:
