@@ -94,6 +94,10 @@ goreleaser_local_release:
 	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --clean)
 .PHONY: goreleaser_local_release
 
+goreleaser_local_release_skip_signing:
+	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --clean --skip sign)
+.PHONY: goreleaser_local_release_skip_signing
+
 goreleaser_verify_install_prereqs:
 	$(call ExecWithMsg,GoReleaser Pre-Release Installing Prereqs,$(INSTALL_GORELEASER_HOOK_PREREQS))
 .PHONY: goreleaser_verify_install_prereqs
