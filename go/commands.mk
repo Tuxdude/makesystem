@@ -27,8 +27,8 @@ GOLINT                            := $(GO_LINT_CMD) -set_exit_status -min_confid
 GOLINTAGG                         := $(GO_LINT_CMD) -set_exit_status -min_confidence 0
 GOLANGCILINT                      := $(GO_CI_LINT_CMD) run
 GOLANGCILINTAGG                   := $(GO_CI_LINT_CMD) run --enable-all
-GORELEASERRELEASE                 := $(GO_RELEASER) release
-GORELEASERCHECK                   := $(GO_RELEASER) check
+GORELEASERRELEASE                 := GO_PKG_VERSION=$(GO_PKG_VERSION) GO_PKG_COMMIT=$(GO_PKG_COMMIT) GO_PKG_DATE=$(GO_PKG_DATE) $(GO_RELEASER) release
+GORELEASERCHECK                   := GO_PKG_VERSION=$(GO_PKG_VERSION) GO_PKG_COMMIT=$(GO_PKG_COMMIT) GO_PKG_DATE=$(GO_PKG_DATE) $(GO_RELEASER) check
 INSTALL_GORELEASER_HOOK_PREREQS   := $(GO_CMD) install \
     github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 CLEAN_ALL                         := $(GOCLEAN) ./... && rm -rf $(GEN_FILES)
