@@ -50,7 +50,8 @@ jobs:
 
       - name: Generate Artifact Name
         id: generate-artifact-name
-        run: echo "artifact=$(basename $(echo "${{github.repository}}"))-snapshot-release-${{github.ref_name}}-${{github.sha}}" >> $GITHUB_OUTPUT
+        # REPO_NAME_WITHOUT_OWNER-snapshot-REF_NAME-GIT_SHORT_HASH
+        run: echo "artifact=$(basename $(echo ${{github.repository}}))-snapshot-$(echo ${{github.ref_name}} | tr / -)-$(git rev-parse --short --verify ${{github.sha}})" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install GoReleaser
