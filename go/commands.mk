@@ -16,8 +16,8 @@ GOGENERATE                        := $(GO_CMD) generate
 GOGET                             := $(GO_CMD) get
 GOLIST                            := $(GO_CMD) list
 GOMOD                             := $(GO_CMD) mod
-GOTEST                            := $(GO_CMD) test -v
-GOCOVERAGE_OUT                    := $(GO_CMD) test -v -race -coverpkg "$(GO_COVERAGE_PKGS)" -coverprofile coverage.out -covermode atomic
+GOTEST                            := $(GO_CMD) test
+GOCOVERAGE_OUT                    := $(GO_CMD) test -race -coverpkg "$(GO_COVERAGE_PKGS)" -coverprofile coverage.out -covermode atomic
 GOCOVERAGE_SUMMARY                := $(GO_CMD) tool cover -func=coverage.out
 GOCOVERAGE_HTML                   := $(GO_CMD) tool cover -html coverage.out -o coverage.html
 GOVET                             := $(GO_CMD) vet
