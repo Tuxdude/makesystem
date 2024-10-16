@@ -58,7 +58,7 @@ jobs:
           install-only: true
 
       - name: Run GoReleaser Snapshot Release Without Signing
-        run: make goreleaser_local_release_skip_signing
+        run: make goreleaser_snapshot_release_skip_signing
 
       - name: Upload Snapshot Release to Artifacts
         uses: actions/upload-artifact@v4
