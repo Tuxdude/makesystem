@@ -15,9 +15,9 @@ ifeq ($(IN_GIT_REPO_WORKING_TREE),true)
         #   - date = current-timestamp
         GO_PKG_VERSION := $(REPO_NEXT_VERSION)+dev
         GO_PKG_COMMIT  := $(REPO_COMMIT_SHA)$(DIRTY_CHANGES_SUFFIX)
-        GO_PKG_DATE    := $(shell date +"%Y-%m-%dT%H:%M:%S%:z")
+        GO_PKG_DATE    := $(shell TZ=America/Los_Angeles date +"%Y-%m-%dT%H:%M:%S%:z")
     else
-        GO_PKG_DATE    := $(shell git show --no-patch --no-notes --pretty='%cI' $(REPO_COMMIT_SHA))
+        GO_PKG_DATE    := $(shell TZ=America/Los_Angeles git show --no-patch --no-notes --format=%cd --date=iso-strict-local $(REPO_COMMIT_SHA))
         GO_PKG_COMMIT  := $(REPO_COMMIT_SHA)
         ifneq ($(REPO_COMMIT_SHA),$(REPO_RECENT_VERSION_SHA))
         # Not on an annotated tag, and without local dirty changes.
@@ -36,7 +36,7 @@ ifeq ($(IN_GIT_REPO_WORKING_TREE),true)
 else
     GO_PKG_VERSION := unknown
     GO_PKG_COMMIT  := unknown
-    GO_PKG_DATE    := $(shell date +"%Y-%m-%dT%H:%M:%S%:z")
+    GO_PKG_DATE    := $(shell TZ=America/Los_Angeles date +"%Y-%m-%dT%H:%M:%S%:z")
 endif
 
 GO_BUILD_FLAGS += -ldflags "-X main.pkgVersion=$(GO_PKG_VERSION) -X main.pkgCommit=$(GO_PKG_COMMIT) -X main.pkgTimestamp=$(GO_PKG_DATE)"
