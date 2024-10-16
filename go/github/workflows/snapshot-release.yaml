@@ -1,5 +1,5 @@
 ---
-name: Local Release
+name: Snapshot Release
 
 on:
   push:
@@ -23,8 +23,8 @@ permissions:
   contents: read
 
 jobs:
-  local-release:
-    name: Local Release
+  snapshot-release:
+    name: Snapshot Release
     runs-on: ubuntu-latest
 
     strategy:
@@ -57,5 +57,16 @@ jobs:
           version: latest
           install-only: true
 
-      - name: Run GoReleaser Local Release Without Signing
+      - name: Run GoReleaser Snapshot Release Without Signing
         run: make goreleaser_local_release_skip_signing
+
+      - name: Upload Snapshot Release to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-release
+          path: |
+            dist/metadata.json
+            dist/*.zip
+            dist/*.tar.xz
+            dist/*.tar.gz
+          if-no-files-found: error
