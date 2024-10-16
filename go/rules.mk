@@ -90,6 +90,10 @@ goreleaser_check_config:
 	$(call ExecWithMsg,GoReleaser Checking config,$(GORELEASERCHECK))
 .PHONY: goreleaser_check_config
 
+goreleaser_release:
+	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --clean)
+.PHONY: goreleaser_local_release
+
 goreleaser_local_release:
 	$(call ExecWithMsg,GoReleaser Building Local Release,$(GORELEASERRELEASE) --snapshot --clean)
 .PHONY: goreleaser_local_release
